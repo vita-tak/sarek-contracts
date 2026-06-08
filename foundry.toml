@@ -1,0 +1,11 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"]
+
+[profile.default.zksync]
+suppressedWarnings = ["assemblycreate"]
+
+[dependencies]
+forge-std = { version = "1", git = "https://github.com/foundry-rs/forge-std" }
