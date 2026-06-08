@@ -1,4 +1,4 @@
-# sarek-contracts
+# Sarek Smart Contracts
 
 Smart contracts for the [Sarek](https://www.sarek.technology/) platform. A blockchain stamping and 
 verification system built on zkSync Era.
