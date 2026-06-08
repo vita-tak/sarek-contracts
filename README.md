@@ -1,66 +1,41 @@
-## Foundry
+# sarek-contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Smart contracts for the [Sarek](https://www.sarek.technology/) platform. A blockchain stamping and 
+verification system built on zkSync Era.
 
-Foundry consists of:
+## Contracts
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+**HashStamp.sol** — Stores MMR roots on-chain as immutable timestamps.
+Permissionless i.e. anyone can stamp and verify.
 
-## Documentation
+**MMRVerifier.sol** — Verifies Merkle Mountain Range leaf inclusion 
+on-chain. Pure mathematics. No state, no storage writes. Free to call.
 
-https://book.getfoundry.sh/
+## Architecture
 
-## Usage
+Each batch of hashes produces an MMR root that is stamped on-chain via HashStamp. 
+MMRVerifier enables permissionless leaf verification directly against the 
+stamped root. No server required.
 
-### Build
+Hash function: keccak256 — matches EvmMMRService in the backend for 
+consistent on-chain verification.
 
-```shell
-$ forge build
+## Deployments
+
+| Contract | Network | Address |
+|---|---|---|
+| HashStamp | zkSync Era Sepolia | `0x90AA8c842FF282baf93040e8E4a6dd8B3F995510` |
+| MMRVerifier | zkSync Era Sepolia | `0x3AC3D57BD681d0da3D007857b60a7Bd505D6e2DA` |
+
+## Getting started
+
+Install dependencies and run tests:
+
+```bash
+forge soldeer install
+forge test
 ```
 
-### Test
+## Part of
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+These contracts are part of [Sarek](https://www.sarek.technology/) data integrity platform.
