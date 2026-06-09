@@ -1,6 +1,6 @@
 # sarek-contracts
 
-Smart contracts for the [Sarek](https://www.sarek.technology/) platform — a blockchain stamping and
+Smart contracts for the [Sarek](https://www.sarek.technology/) platform. A data integrity and
 verification system built on zkSync Era.
 
 ## Contracts
