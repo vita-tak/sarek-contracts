@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.30;
 
 import "./HashStamp.sol";
 
@@ -25,8 +25,11 @@ contract MMRVerifier {
     error RootNotStamped();
     error EmptyPeaks();
     error LeafIndexOutOfRange();
+    error ZeroAddress();
+    error InvalidSiblingsLength(uint256 expected, uint256 actual);
 
     constructor(address hashStampAddress) {
+        if (hashStampAddress == address(0)) revert ZeroAddress();
         hashStamp = HashStamp(hashStampAddress);
     }
 
@@ -52,10 +55,17 @@ contract MMRVerifier {
         if (peaks.length == 0) revert EmptyPeaks();
 
         // Find which mountain the leaf belongs to
-        (uint256 mountainIndex, uint256 localIndex) = _locateLeaf(
+        (uint256 mountainIndex, uint256 localIndex, uint256 mountainSize) = _locateLeaf(
             leafIndex,
             leafCount
         );
+
+        // Validate siblings.length == height of the located mountain.
+        // A mountain of size 2^h has height h (one sibling per level).
+        uint256 expectedHeight = _log2(mountainSize);
+        if (siblings.length != expectedHeight) {
+            revert InvalidSiblingsLength(expectedHeight, siblings.length);
+        }
 
         // Climb the mountain using siblings. The supplied leaf is domain-tagged
         // before the climb so it can never collide with an internal node.
@@ -82,11 +92,13 @@ contract MMRVerifier {
     /**
      * Finds which mountain a leaf belongs to.
      * Mirrors MMRService.locateLeaf() in ledger-service.
+     * Returns the mountain's size in addition to index and local position
+     * so callers can derive the expected proof height.
      */
-   function _locateLeaf(
-    uint32 leafIndex,
-    uint32 leafCount
-    ) internal pure returns (uint256 mountainIndex, uint256 localIndex) {
+    function _locateLeaf(
+        uint32 leafIndex,
+        uint32 leafCount
+    ) internal pure returns (uint256 mountainIndex, uint256 localIndex, uint256 mountainSize) {
         uint256 offset = 0;
         mountainIndex = 0;
 
@@ -94,13 +106,25 @@ contract MMRVerifier {
             uint256 size = uint256(1) << (i - 1);
             if (uint256(leafCount) & size != 0) {
                 if (uint256(leafIndex) < offset + size) {
-                    return (mountainIndex, uint256(leafIndex) - offset);
+                    return (mountainIndex, uint256(leafIndex) - offset, size);
                 }
                 offset += size;
                 mountainIndex++;
             }
         }
         revert LeafIndexOutOfRange();
+    }
+
+    /**
+     * Returns floor(log2(x)) for x >= 1.
+     * Mountain sizes are always powers of two, so this gives the exact height.
+     */
+    function _log2(uint256 x) internal pure returns (uint256 result) {
+        result = 0;
+        while (x > 1) {
+            x >>= 1;
+            result++;
+        }
     }
 
     /**

@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
-
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+pragma solidity ^0.8.30;
 
 contract HashStamp {
     struct StampData {
@@ -32,17 +30,4 @@ contract HashStamp {
         return (s.timestamp, s.stampedBy);
     }
 
-    /**
-     * Verifies that a leaf exists in a stamped Merkle tree.
-     * Combines on-chain root verification with Merkle proof validation.
-     * Returns false if root has never been stamped — never reverts.
-     */
-    function verifyLeaf(
-        bytes32 rootHash,
-        bytes32 leaf,
-        bytes32[] calldata proof
-    ) external view returns (bool) {
-        if (_stamps[rootHash].timestamp == 0) return false;
-        return MerkleProof.verify(proof, rootHash, leaf);
-    }
 }

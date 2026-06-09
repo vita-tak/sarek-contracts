@@ -230,4 +230,44 @@ contract MMRVerifierTest is Test {
 
         assertFalse(verifier.verifyLeaf(mmrRoot, mmrRoot, noSiblings, singlePeak, 1, 0));
     }
+
+    // ── Constructor zero-address guard ────────────────────────────────────────
+
+    function test_RevertConstructorWithZeroAddress() public {
+        vm.expectRevert(MMRVerifier.ZeroAddress.selector);
+        new MMRVerifier(address(0));
+    }
+
+    // ── siblings.length validation ────────────────────────────────────────────
+
+    function test_RevertIfWrongSiblingsLength() public {
+        // 2-leaf MMR: mountain height = 1, expected 1 sibling. Supply 2.
+        (bytes32 mmrRoot, bytes32 leaf0,, bytes32[] memory siblings0, bytes32[] memory peaks)
+            = _build2LeafMMR();
+        vm.prank(alice);
+        hashStamp.stamp(mmrRoot);
+
+        bytes32[] memory wrongSiblings = new bytes32[](2);
+        wrongSiblings[0] = siblings0[0];
+        wrongSiblings[1] = bytes32(uint256(0xdead));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(MMRVerifier.InvalidSiblingsLength.selector, 1, 2)
+        );
+        verifier.verifyLeaf(mmrRoot, leaf0, wrongSiblings, peaks, 2, 0);
+    }
+
+    function test_RevertIfZeroSiblingsForMultiLeafMountain() public {
+        // 2-leaf MMR: mountain height = 1, expected 1 sibling. Supply 0.
+        (bytes32 mmrRoot, bytes32 leaf0,,, bytes32[] memory peaks)
+            = _build2LeafMMR();
+        vm.prank(alice);
+        hashStamp.stamp(mmrRoot);
+
+        bytes32[] memory noSiblings = new bytes32[](0);
+        vm.expectRevert(
+            abi.encodeWithSelector(MMRVerifier.InvalidSiblingsLength.selector, 1, 0)
+        );
+        verifier.verifyLeaf(mmrRoot, leaf0, noSiblings, peaks, 2, 0);
+    }
 }
