@@ -1,7 +1,7 @@
 out/
 zkout/
 cache/
-broadcast/
 lib/
 
+scripts.md
 .env
