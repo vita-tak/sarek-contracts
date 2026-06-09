@@ -1,66 +1,43 @@
-## Foundry
+# sarek-contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Smart contracts for the [Sarek](https://www.sarek.technology/) platform — a blockchain stamping and
+verification system built on zkSync Era.
 
-Foundry consists of:
+## Contracts
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+**HashStamp.sol** — Stores MMR roots on-chain as immutable timestamps.
+Permissionless — anyone can stamp and verify.
 
-## Documentation
+**MMRVerifier.sol** — Verifies MMR leaf inclusion
+on-chain. Pure mathematics, no state, no storage writes. Free to call.
 
-https://book.getfoundry.sh/
+## Architecture
 
-## Usage
+Sarek builds a Merkle Mountain Range (MMR) from hashed data. Each batch
+of hashes produces an MMR root that is stamped on-chain via HashStamp.
+MMRVerifier enables permissionless leaf verification directly against the
+stamped root, no server required.
 
-### Build
+Hash function: keccak256 which matches backend for
+consistent on-chain verification.
 
-```shell
-$ forge build
+## Deployments
+
+| Contract    | Network            | Address                                      |
+| ----------- | ------------------ | -------------------------------------------- |
+| HashStamp   | zkSync Era Sepolia | `0xF7D64564b639B05496b047a2057a3E60cD7dEeD3` |
+| MMRVerifier | zkSync Era Sepolia | `0x281bF8d48f4Dccb6Fc5A8527a7928534eAA20085` |
+
+## Getting started
+
+Install dependencies and run tests:
+
+```bash
+forge soldeer install
+forge test
 ```
 
-### Test
+## Part of
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+These contracts are part of [Sarek](https://www.sarek.technology/)
+— an AI accountability and data integrity platform.
