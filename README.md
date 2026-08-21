@@ -6,7 +6,7 @@ verification system built on zkSync Era.
 ## Contracts
 
 **HashStamp.sol** — Stores MMR roots on-chain as immutable timestamps.
-Permissionless — anyone can stamp and verify.
+Permissionless, anyone can stamp and verify.
 
 **MMRVerifier.sol** — Verifies MMR leaf inclusion
 on-chain. Pure mathematics, no state, no storage writes. Free to call.
@@ -15,7 +15,7 @@ on-chain. Pure mathematics, no state, no storage writes. Free to call.
 
 Sarek builds a Merkle Mountain Range (MMR) from hashed data. Each batch
 of hashes produces an MMR root that is stamped on-chain via HashStamp.
-MMRVerifier enables permissionless leaf verification directly against the
+MMRVerifier enables permissionless merkle leaf verification directly against the
 stamped root, no server required.
 
 Hash function: keccak256 which matches backend for
